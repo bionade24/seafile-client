@@ -47,10 +47,18 @@ public:
                      const QString& commit_id = QString(),
                      const QString& previous_commit_id = QString(),
                      MessageIcon icon = Information,
-                     int millisecondsTimeoutHint = 10000);
+                     int millisecondsTimeoutHint = 10000,
+                     bool is_error_message = false);
+
+    void setSyncErrorStatus(bool have_sync_error) {
+        have_sync_errors_= have_sync_error;
+    }
+
+    bool haveSyncError() const { return have_sync_errors_; }
 
 public slots:
     void showSettingsWindow();
+    void slotSyncErrorUpdate();
 
 private slots:
     void disableAutoSync();
@@ -122,6 +130,7 @@ private:
     QString repo_id_;
     QString commit_id_;
     QString previous_commit_id_;
+    bool is_error_message_;
 
     QHash<QString, QIcon> icon_cache_;
 
@@ -142,6 +151,7 @@ private:
     SyncErrorsDialog *sync_errors_dialog_;
     AboutDialog *about_dialog_;
     LogDirUploader *log_dir_uploader_;
+    bool have_sync_errors_  = false;
 };
 
 #endif // SEAFILE_CLIENT_TRAY_ICON_H

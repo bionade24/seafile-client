@@ -17,7 +17,7 @@ class QStringList;
 
 class ServerRepo;
 class Account;
-class StarredFile;
+class StarredItem;
 class SeafEvent;
 class CommitDetails;
 
@@ -80,9 +80,6 @@ class RepoDownloadInfo
 {
 public:
     int repo_version;
-    QString relay_id;
-    QString relay_addr;
-    QString relay_port;
     QString email;
     QString token;
     QString repo_id;
@@ -158,6 +155,15 @@ public:
                       const QString& repo_id,
                       const QString& magic,
                       const QString& random_key);
+    // Constructor for seafile encryption v3
+    CreateRepoRequest(const Account& account,
+                      const QString& name,
+                      const QString& desc,
+                      int enc_version,
+                      const QString& repo_id,
+                      const QString& magic,
+                      const QString& random_key,
+                      const QString& salt);
 
 protected slots:
     void requestSuccess(QNetworkReply& reply);
@@ -246,7 +252,7 @@ public:
     GetStarredFilesRequest(const Account& account);
 
 signals:
-    void success(const std::vector<StarredFile>& starred_files);
+    void success(const std::vector<StarredItem>& starred_files);
 
 protected slots:
     void requestSuccess(QNetworkReply& reply);
@@ -255,20 +261,21 @@ private:
     Q_DISABLE_COPY(GetStarredFilesRequest);
 };
 
-class GetEventsRequestV2 : public SeafileApiRequest
+// get starred item api v2.1
+class GetStarredFilesRequestV2 : public SeafileApiRequest
 {
-    Q_OBJECT
+Q_OBJECT
 public:
-    GetEventsRequestV2(const Account& account, int page = 1, int perpage = 25, int avatar_size = 36);
+    GetStarredFilesRequestV2(const Account& account);
 
 signals:
-    void success(const std::vector<SeafEvent>& events);
+    void success(const std::vector<StarredItem>& starred_files);
 
 protected slots:
     void requestSuccess(QNetworkReply& reply);
 
 private:
-    Q_DISABLE_COPY(GetEventsRequestV2);
+    Q_DISABLE_COPY(GetStarredFilesRequestV2);
 };
 
 class GetEventsRequest : public SeafileApiRequest
@@ -285,6 +292,22 @@ protected slots:
 
 private:
     Q_DISABLE_COPY(GetEventsRequest);
+};
+
+class GetEventsRequestV2 : public SeafileApiRequest
+{
+    Q_OBJECT
+public:
+    GetEventsRequestV2(const Account& account, int page = 1, int perpage = 25, int avatar_size = 36);
+
+signals:
+    void success(const std::vector<SeafEvent>& events);
+
+protected slots:
+    void requestSuccess(QNetworkReply& reply);
+
+private:
+    Q_DISABLE_COPY(GetEventsRequestV2);
 };
 
 class GetCommitDetailsRequest : public SeafileApiRequest
@@ -395,7 +418,7 @@ protected slots:
 
 private:
     Q_DISABLE_COPY(ServerInfoRequest);
-    const Account& account_;
+    const Account account_;
 };
 
 class LogoutDeviceRequest : public SeafileApiRequest

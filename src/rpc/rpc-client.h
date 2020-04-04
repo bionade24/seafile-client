@@ -38,23 +38,19 @@ public:
     int getLocalRepo(const QString& repo_id, LocalRepo *repo);
     int setAutoSync(const bool autoSync);
     int downloadRepo(const QString& id,
-                     int repo_version, const QString& relayId,
-                     const QString& name, const QString& wt,
-                     const QString& token, const QString& passwd,
-                     const QString& magic, const QString& peerAddr,
-                     const QString& port, const QString& email,
-                     const QString& random_key, int enc_version,
-                     const QString& more_info,
+                     int repo_version, const QString& name,
+                     const QString& wt, const QString& token,
+                     const QString& passwd, const QString& magic,
+                     const QString& email, const QString& random_key,
+                     int enc_version, const QString& more_info,
                      QString *error);
 
     int cloneRepo(const QString& id,
-                  int repo_version, const QString& relayId,
-                  const QString& name, const QString& wt,
-                  const QString& token, const QString& passwd,
-                  const QString& magic, const QString& peerAddr,
-                  const QString& port, const QString& email,
-                  const QString& random_key, int enc_version,
-                  const QString& more_info,
+                  int repo_version, const QString& name,
+                  const QString& wt, const QString& token,
+                  const QString& passwd, const QString& magic,
+                  const QString& email, const QString& random_key,
+                  int enc_version, const QString& more_info,
                   QString *error);
 
     int seafileGetConfig(const QString& key, QString *value);
@@ -69,8 +65,8 @@ public:
     int cancelCloneTask(const QString& repo_id, QString *error);
     int removeCloneTask(const QString& repo_id, QString *error);
 
-    int unsyncReposByAccount(const QString& server_addr, const QString& email, QString *error);
-    int removeSyncTokensByAccount(const QString& server_addr, const QString& email, QString *error);
+    int unsyncReposByAccount(const QUrl& server_url, const QString& email, QString *err);
+    int removeSyncTokensByAccount(const QUrl& server_url, const QString& email, QString *error);
     int getUploadRate(int *rate);
     int getDownloadRate(int *rate);
 
@@ -92,7 +88,7 @@ public:
 
     QString getCcnetPeerId();
 
-    int updateReposServerHost(const QString& old_host,
+    int updateReposServerHost(const QUrl& old_server_url,
                               const QString& new_host,
                               const QString& new_server_url,
                               QString *err);
@@ -121,7 +117,8 @@ public:
                                   const QString& repo_id,
                                   const QString& passwd,
                                   QString *magic,
-                                  QString *random_key);
+                                  QString *random_key,
+                                  QString *salt);
 
     bool setServerProperty(const QString &url,
                            const QString &key,
@@ -137,6 +134,8 @@ public:
     bool getSyncErrors(std::vector<SyncError> *errors, int offset=0, int limit=10);
 
     bool getSyncNotification(json_t **ret);
+
+    bool deleteFileAsyncErrorById(int id);
 
 private:
     Q_DISABLE_COPY(SeafileRpcClient)

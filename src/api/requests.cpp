@@ -16,6 +16,7 @@
 #include "utils/api-utils.h"
 #include "utils/json-utils.h"
 #include "utils/utils.h"
+#include "account-mgr.h"
 
 #include "requests.h"
 
@@ -30,6 +31,7 @@ const char* kCreateSubrepoUrl = "api2/repos/%1/dir/sub_repo/";
 const char* kUnseenMessagesUrl = "api2/unseen_messages/";
 const char* kDefaultRepoUrl = "api2/default-repo/";
 const char* kStarredFilesUrl = "api2/starredfiles/";
+const char* kStarredItemsUrl = "api/v2.1/starred-items/";
 const char* kGetEventsUrl = "api2/events/";
 const char* kCommitDetailsUrl = "api2/repo_history_changes/";
 const char* kAvatarUrl = "api2/avatars/user/";
@@ -158,9 +160,6 @@ RepoDownloadInfo RepoDownloadInfo::fromDict(QMap<QString, QVariant>& dict,
 {
     RepoDownloadInfo info;
     info.repo_version = dict["repo_version"].toInt();
-    info.relay_id = dict["relay_id"].toString();
-    info.relay_addr = dict["relay_addr"].toString();
-    info.relay_port = dict["relay_port"].toString();
     info.email = dict["email"].toString();
     info.token = dict["token"].toString();
     info.repo_id = dict["repo_id"].toString();
@@ -173,11 +172,12 @@ RepoDownloadInfo RepoDownloadInfo::fromDict(QMap<QString, QVariant>& dict,
 
     QUrl url = url_in;
     url.setPath("/");
-    info.relay_addr = url.host();
 
+    QString salt = dict.value("salt").toString();
     QMap<QString, QVariant> map;
     map.insert("is_readonly", read_only ? 1 : 0);
     map.insert("server_url", url.toString());
+    map.insert("repo_salt", salt);
 
     info.more_info = ::mapToJson(map);
 
@@ -267,6 +267,27 @@ CreateRepoRequest::CreateRepoRequest(const Account& account,
     setFormParam("repo_id", repo_id);
     setFormParam("magic", magic);
     setFormParam("random_key", random_key);
+}
+
+CreateRepoRequest::CreateRepoRequest(const Account& account,
+                                     const QString& name,
+                                     const QString& desc,
+                                     int enc_version,
+                                     const QString& repo_id,
+                                     const QString& magic,
+                                     const QString& random_key,
+                                     const QString& salt)
+    : SeafileApiRequest(account.getAbsoluteUrl(kCreateRepoUrl),
+                        SeafileApiRequest::METHOD_POST,
+                        account.token)
+{
+    setFormParam("name", name);
+    setFormParam("desc", desc);
+    setFormParam("enc_version", QString::number(enc_version));
+    setFormParam("repo_id", repo_id);
+    setFormParam("magic", magic);
+    setFormParam("random_key", random_key);
+    setFormParam("salt", salt);
 }
 
 void CreateRepoRequest::requestSuccess(QNetworkReply& reply)
@@ -452,8 +473,33 @@ void GetStarredFilesRequest::requestSuccess(QNetworkReply& reply)
 
     QScopedPointer<json_t, JsonPointerCustomDeleter> json(root);
 
-    std::vector<StarredFile> files =
-        StarredFile::listFromJSON(json.data(), &error);
+    std::vector<StarredItem> files =
+        StarredItem::listFromJSON(json.data(), &error);
+    emit success(files);
+}
+
+GetStarredFilesRequestV2::GetStarredFilesRequestV2(const Account& account)
+        : SeafileApiRequest(account.getAbsoluteUrl(kStarredItemsUrl),
+                            SeafileApiRequest::METHOD_GET,
+                            account.token)
+{
+}
+
+void GetStarredFilesRequestV2::requestSuccess(QNetworkReply& reply)
+{
+    json_error_t error;
+    json_t* root = parseJSON(reply, &error);
+    if (!root) {
+        qWarning("GetStarredItemsRequest: failed to parse json:%s\n",
+                 error.text);
+        emit failed(ApiError::fromJsonError());
+        return;
+    }
+
+    QScopedPointer<json_t, JsonPointerCustomDeleter> json(root);
+    json_t* array = json_object_get(json.data(), "starred_item_list");
+    std::vector<StarredItem> files =
+            StarredItem::listFromJSON(array, &error, true);
     emit success(files);
 }
 
@@ -686,6 +732,10 @@ void ServerInfoRequest::requestSuccess(QNetworkReply& reply)
 
     if (dict.contains("version")) {
         ret.parseVersionFromString(dict["version"].toString());
+    }
+
+    if (dict.contains("encrypted_library_version")) {
+        ret.parseEncryptedLibraryVersionFromString(dict["encrypted_library_version"].toString());
     }
 
     if (dict.contains("features")) {

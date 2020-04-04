@@ -23,6 +23,7 @@ class ApiError;
 class SeafileExtensionHandler : public QObject {
     SINGLETON_DEFINE(SeafileExtensionHandler)
     Q_OBJECT
+
 public:
     SeafileExtensionHandler();
     void start();
@@ -43,8 +44,14 @@ private slots:
                       const QString& path_in_repo,
                       bool to_group);
     void openUrlWithAutoLogin(const QUrl& url);
-    void onGetSmartLinkSuccess(const QString& smart_link);
+    void onGetSmartLinkSuccess(const QString& smart_link, const QString& protocol_link);
     void onGetSmartLinkFailed(const ApiError& error);
+    void getUploadLink(const QString& repo, const QString& path_in_repo);
+    void onGetUploadLinkSuccess(const QString &upload_link);
+    void onGetUploadLinkFailed(const ApiError& error);
+    void showLockedBy(const QString& repo_id, const QString& path_in_repo);
+    void onGetFileLockInfoSuccess(bool found, const QString &owner);
+    void onGetFileLockInfoFailed(const ApiError& error);
 
 private:
     ExtConnectionListenerThread *listener_thread_;
@@ -76,6 +83,8 @@ signals:
                       const QString& path_in_repo,
                       bool to_group);
     void openUrlWithAutoLogin(const QUrl& url);
+    void showLockedBy(const QString& repo_id, const QString& path_in_repo);
+    void getUploadLink(const QString& repo_id, const QString& path_in_repo);
 
 private:
     void servePipeInNewThread(HANDLE pipe);
@@ -104,6 +113,8 @@ signals:
                       const QString& path_in_repo,
                       bool to_group);
     void openUrlWithAutoLogin(const QUrl& url);
+    void showLockedBy(const QString& repo_id, const QString& path_in_repo);
+    void getUploadLink(const QString& repo_id, const QString& path_in_repo);
 
 private:
     HANDLE pipe_;
@@ -118,6 +129,8 @@ private:
     void handleLockFile(const QStringList& args, bool lock);
     void handlePrivateShare(const QStringList& args, bool to_group);
     void handleShowHistory(const QStringList& args);
+    void handleShowLockedBy(const QStringList& args);
+    void handleGetUploadLink(const QStringList& args);
 };
 
 class ReposInfoCache : public QObject {

@@ -161,6 +161,8 @@ void SeafileTrayIcon::start()
 #if defined(Q_OS_MAC)
     utils::mac::set_darkmode_watcher(&darkmodeWatcher);
 #endif
+    sync_errors_dialog_ = new SyncErrorsDialog;
+    sync_errors_dialog_->updateErrors();
 }
 
 void SeafileTrayIcon::createActions()
@@ -326,8 +328,10 @@ void SeafileTrayIcon::showMessage(const QString &title,
                                   const QString &commit_id,
                                   const QString &previous_commit_id,
                                   MessageIcon icon,
-                                  int millisecondsTimeoutHint)
+                                  int millisecondsTimeoutHint,
+                                  bool is_error_message)
 {
+    is_error_message_ = is_error_message;
 #ifdef Q_OS_MAC
     repo_id_ = repo_id;
     commit_id_ = commit_id;
@@ -535,9 +539,9 @@ void SeafileTrayIcon::openHelp()
 {
     QString url;
     if (QLocale::system().name() == "zh_CN") {
-        url = "https://www.seafile.com/help/install/";
+        url = "https://cloud.seafile.com/published/seafile-user-manual/syncing_client/install_syncing_client.md";
     } else {
-        url = "https://www.seafile.com/en/help/install/";
+        url = "https://download.seafile.com/published/seafile-user-manual/syncing_client/install_sync.md";
     }
 
     QDesktopServices::openUrl(QUrl(url));
@@ -606,6 +610,10 @@ void SeafileTrayIcon::showSettingsWindow()
     seafApplet->settingsDialog()->activateWindow();
 }
 
+void SeafileTrayIcon::slotSyncErrorUpdate() {
+    setSyncErrorStatus(true);
+}
+
 void SeafileTrayIcon::onActivated(QSystemTrayIcon::ActivationReason reason)
 {
 #if !defined(Q_OS_MAC)
@@ -653,6 +661,11 @@ void SeafileTrayIcon::refreshTrayIcon()
         return;
     }
 
+    if (haveSyncError()) {
+        setState(STATE_SERVERS_NOT_CONNECTED, tr("have some sync error"));
+        return;
+    }
+
     setState(STATE_DAEMON_UP);
 }
 
@@ -690,6 +703,10 @@ void SeafileTrayIcon::refreshTrayIconToolTip()
 
 void SeafileTrayIcon::onMessageClicked()
 {
+    if (is_error_message_) {
+        showSyncErrorsDialog();
+        return;
+    }
     if (repo_id_.isEmpty())
         return;
     LocalRepo repo;
@@ -722,6 +739,8 @@ void SeafileTrayIcon::checkTrayIconMessageQueue()
 
 void SeafileTrayIcon::showSyncErrorsDialog()
 {
+    // Change icon status to daemon up when show sync errors dialog
+    setState(STATE_DAEMON_UP);
     if (sync_errors_dialog_ == nullptr) {
         sync_errors_dialog_ = new SyncErrorsDialog;
     }
@@ -730,4 +749,5 @@ void SeafileTrayIcon::showSyncErrorsDialog()
     sync_errors_dialog_->show();
     sync_errors_dialog_->raise();
     sync_errors_dialog_->activateWindow();
+    setSyncErrorStatus(false);
 }

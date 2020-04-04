@@ -29,8 +29,15 @@ private slots:
     void onShareLinkGenerated(const QString& link);
     void onLockFileSuccess();
     void doShowFileHistory(const QString& path);
-    void onGetSmartLinkSuccess(const QString& smart_link);
+    void doShowFileLockedBy(const QString& path);
+    void onGetFileLockInfoSuccess(bool found, const QString& lock_owner);
+    void onGetFileLockInfoFailed(const ApiError& error);
+    void onGetSmartLinkSuccess(const QString& smart_link, const QString& protocol_link);
     void onGetSmartLinkFailed(const ApiError& error);
+    void doGetUploadLink(const QString& path);
+    void onGetUploadLinkSuccess(const QString& upload_link);
+    void onGetUploadLinkFailed(const ApiError& error);
+
 private:
     bool lookUpFileInformation(const QString &path, QString *repo_id, Account *account, QString *path_in_repo);
     SeafileRpcClient *rpc_client_;

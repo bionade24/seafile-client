@@ -58,9 +58,12 @@ public:
 
     void contextMenuEvent(QContextMenuEvent *event);
     void resizeEvent(QResizeEvent *event);
+signals:
+    void refreshModel();
 
 private slots:
     void onItemDoubleClicked(const QModelIndex& index);
+    void onDeleteFileAsyncError();
 
 private:
     void createContextMenu();
@@ -68,6 +71,9 @@ private:
 
 private:
     QMenu *context_menu_;
+    QAction *delete_action_;
+    int id_;
+    QList<SyncError> selected_sync_errors_;
 };
 
 
@@ -87,6 +93,9 @@ public:
 
     void onResize(const QSize& size);
 
+signals:
+    void sigSyncErrorUpdated();
+
 public slots:
     void updateErrors();
 
@@ -97,6 +106,7 @@ private:
     int repo_name_column_width_;
     int path_column_width_;
     int error_column_width_;
+    int current_id_ = 0;
 };
 
 #endif // SEAFILE_CLIENT_SYNC_ERRORS_DIALOG_H

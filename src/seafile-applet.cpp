@@ -167,6 +167,7 @@ const char *const kPreconfigureUsername = "PreconfigureUsername";
 const char *const kPreconfigureUserToken = "PreconfigureUserToken";
 const char *const kPreconfigureServerAddr = "PreconfigureServerAddr";
 const char *const kPreconfigureComputerName = "PreconfigureComputerName";
+const char* const kPreConfiguretionBlockSize = "PreconfigureBlockSize";
 const char* const kHideConfigurationWizard = "HideConfigurationWizard";
 #if defined(Q_OS_WIN32)
 const char *const kSeafileConfigureFileName = "seafile.ini";
@@ -180,7 +181,6 @@ const char *const kSeafilePreconfigureGroupName = "preconfigure";
 const int kIntervalForUpdateRepoProperty = 1000;
 
 const char *kRepoServerUrlProperty = "server-url";
-const char *kRepoRelayAddrProperty = "relay-address";
 
 } // namespace
 
@@ -312,7 +312,7 @@ void SeafileApplet::onDaemonStarted()
     AccountInfoService::instance()->start();
     SeafileAppletRpcServer::instance()->start();
 
-    account_mgr_->updateServerInfo();
+    account_mgr_->updateServerInfoForAllAccounts();
 
     //
     // start ui part
@@ -339,9 +339,7 @@ void SeafileApplet::onDaemonStarted()
                 settingsManager()->setComputerName(computer_name);
             if (!username.isEmpty() && !token.isEmpty() && !url.isEmpty()) {
                 Account account(url, username, token);
-                if (account_mgr_->saveAccount(account) < 0) {
-                    errorAndExit(tr("failed to add default account"));
-                }
+                account_mgr_->setCurrentAccount(account);
                 break;
             }
 
@@ -387,6 +385,14 @@ void SeafileApplet::onDaemonStarted()
         rpc_client_->seafileSetConfig("client_id", getUniqueClientId());
     }
 
+    // pre-configure option to set the size of sync block.
+    QString block = readPreconfigureExpandedString(kPreConfiguretionBlockSize);
+    if (!block.isEmpty()) {
+        int block_size = block.toInt();
+        if (rpc_client_->seafileSetConfigInt("block_size", block_size) < 0) {
+            qDebug("setting sync block_size error");
+        }
+    }
     QTimer::singleShot(kIntervalForUpdateRepoProperty,
                        this, SLOT(updateReposPropertyForHttpSync()));
 
@@ -544,6 +550,9 @@ void SeafileApplet::messageBox(const QString& msg, QWidget *parent)
     box.setWindowTitle(getBrand());
     box.setIcon(QMessageBox::Information);
     box.addButton(tr("OK"), QMessageBox::YesRole);
+    if (!parent) {
+        main_win_->showWindow();
+    }
     box.exec();
     qDebug("%s", msg.toUtf8().data());
 }
@@ -636,19 +645,21 @@ void SeafileApplet::updateReposPropertyForHttpSync()
     for (size_t i = 0; i < repos.size(); i++) {
         const LocalRepo& repo = repos[i];
         QString repo_server_url;
-        QString relay_addr;
+        QString server_url;
         if (rpc_client_->getRepoProperty(repo.id, kRepoServerUrlProperty, &repo_server_url) < 0) {
             continue;
         }
         if (!repo_server_url.isEmpty()) {
             continue;
         }
-        if (rpc_client_->getRepoProperty(repo.id, kRepoRelayAddrProperty, &relay_addr) < 0) {
+        if (rpc_client_->getRepoProperty(repo.id, kRepoServerUrlProperty, &server_url) < 0) {
             continue;
         }
+
+        QString server_host = QUrl(server_url).host();
         for (size_t i = 0; i < accounts.size(); i++) {
             const Account& account = accounts[i];
-            if (account.serverUrl.host() == relay_addr) {
+            if (account.serverUrl.host() == server_host) {
                 QUrl url(account.serverUrl);
                 url.setPath("/");
                 rpc_client_->setRepoProperty(repo.id, kRepoServerUrlProperty, url.toString());

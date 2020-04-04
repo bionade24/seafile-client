@@ -14,9 +14,7 @@ public:
     QString state;
     QString rt_state;
     QString error_str;
-    QString error_detail;
-    QString peer_id;
-    QString tx_id;
+    int error_code;
 
     QString state_str;
     qint64 block_done;
@@ -44,8 +42,8 @@ public:
             && repo_name == rhs.repo_name
             && worktree == rhs.worktree
             && state_str == rhs.state_str
-            && error_str == rhs.error_str
-            && error_detail == rhs.error_detail;
+            && error_code == rhs.error_code
+            && error_str == rhs.error_str;
     }
 
     bool operator!=(const CloneTask& rhs) const {
@@ -53,7 +51,7 @@ public:
     }
 
 private:
-    QString calcProgress(int done, int total);
+    QString calcProgress(int64_t done, int64_t total);
 };
 
 #endif // SEAFILE_CLIENT_RPC_CLONE_TASK_H

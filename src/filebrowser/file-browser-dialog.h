@@ -102,6 +102,9 @@ private slots:
     void onGetDirentShare(const SeafDirent& dirent);
     void onGetDirentShareToUserOrGroup(const SeafDirent& dirent, bool to_group);
     void onGetDirentShareSeafile(const SeafDirent& dirent);
+    void onGetDirentUploadLink(const SeafDirent& dirent);
+    void onGetUploadLinkSuccess(const QString& upload_link);
+    void onGetUploadLinkFailed(const ApiError&);
     void onGetDirentUpdate(const SeafDirent& dirent);
     void onGetDirentsPaste();
     void onGetSyncSubdirectory(const QString &folder_name);
@@ -149,14 +152,14 @@ private slots:
                          bool has_more);
     void onSearchFailed(const ApiError& error);
 
-    void onGetSmartLinkSuccess(const QString& smart_link);
+    void onGetSmartLinkSuccess(const QString& smart_link, const QString& protocol_link);
     void onGetSmartLinkFailed(const ApiError& error);
 private:
     Q_DISABLE_COPY(FileBrowserDialog)
 
     void done(int retval);
     bool hasFilesToBePasted();
-    void setFilesToBePasted(bool is_copy, const QStringList &file_names);
+    void setFilesToBePasted(bool is_copy, const QMap<QString ,int> &file_names);
 
     void createToolBar();
     void createStatusBar();
@@ -201,7 +204,7 @@ private:
     qint64 search_text_last_modified_;
 
     // copy-paste related items between different instances of FileBrowserDialog
-    static QStringList file_names_to_be_pasted_;
+    static QMap<QString, int> file_names_to_be_pasted_;
     static QString dir_path_to_be_pasted_from_;
     static QString repo_id_to_be_pasted_from_;
     static Account account_to_be_pasted_from_;

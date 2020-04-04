@@ -521,6 +521,13 @@ non caricato a causa di un errore.</translation>
     </message>
 </context>
 <context>
+    <name>DataManager</name>
+    <message>
+        <source>Another copy or move operation is in progress. Please wait until it finishes.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>DownloadRepoDialog</name>
     <message>
         <source>Please enter the password</source>
@@ -858,6 +865,10 @@ non caricato a causa di un errore.</translation>
         <source>Failed to get link</source>
         <translation type="unfinished"/>
     </message>
+    <message>
+        <source>Failed to get upload link information for file &quot;%1&quot;</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>FileBrowserProgressDialog</name>
@@ -912,6 +923,10 @@ non caricato a causa di un errore.</translation>
     <message>
         <source>File save failed</source>
         <translation>Salvataggio del file fallito</translation>
+    </message>
+    <message>
+        <source>Index progress request error %1</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1085,11 +1100,27 @@ non caricato a causa di un errore.</translation>
         <source>Open Local Cache Folder</source>
         <translation>Apri la cartella locale della Cache</translation>
     </message>
+    <message>
+        <source>&amp;Generate %1 Upload Link</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>FinderSyncHost</name>
     <message>
         <source>Failed to get link</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>File &quot;%1&quot; is locked by %2</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Failed to get lock information for file &quot;%1&quot;</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Failed to get upload link for file &quot;%1&quot;</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1366,10 +1397,6 @@ Vuoi scaricare la tua libreria predefinita?</translation>
         <translation>Per favore inserisci il nome del computer</translation>
     </message>
     <message>
-        <source>Failed to save current account</source>
-        <translation>Impossibile salvare l&apos;account corrente</translation>
-    </message>
-    <message>
         <source>%1 Server Address</source>
         <translation>%1 Indirizzo del Server</translation>
     </message>
@@ -1483,20 +1510,11 @@ Vuoi scaricare la tua libreria predefinita?</translation>
 <context>
     <name>MessagePoller</name>
     <message>
-        <source>&quot;%1&quot; is unsynced. 
-Reason: Deleted on server</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>&quot;%1&quot; is synchronized</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <source>Files uploaded to &quot;%1&quot;</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>File %1 conflict</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -1534,13 +1552,23 @@ File path contains invalid characters. It is not synced to this computer.</sourc
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>&quot;%1&quot; failed to sync. 
-Access denied to service</source>
+        <source>No permission to sync folder %1.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>&quot;%1&quot; failed to sync.
-The library owner&apos;s storage space is used up.</source>
+        <source>Updates in read-only library %1 will not be uploaded.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Concurrent updates to file. File %1 is saved as conflict file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Folder %1 is moved to seafile-recycle-bin folder since it contains not-yet uploaded files.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Folder for library %1 is removed or moved. The library is unsynced.</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -1678,54 +1706,6 @@ The library owner&apos;s storage space is used up.</source>
         <translation>sconosciuto</translation>
     </message>
     <message>
-        <source>Server has been removed</source>
-        <translation>Il server è stato rimosso</translation>
-    </message>
-    <message>
-        <source>You have not logged in to the server</source>
-        <translation>Non ti sei autenticato nel server</translation>
-    </message>
-    <message>
-        <source>You do not have permission to access this library</source>
-        <translation>Non hai i permessi per accedere a questa libreria</translation>
-    </message>
-    <message>
-        <source>The storage space of the library owner has been used up</source>
-        <translation>Lo spazio di archiviazione del proprietario della libreria è esaurito</translation>
-    </message>
-    <message>
-        <source>Remote service is not available</source>
-        <translation>Servizio remoto non disponibile</translation>
-    </message>
-    <message>
-        <source>Access denied to service</source>
-        <translation>Accesso negato al servizio</translation>
-    </message>
-    <message>
-        <source>Internal data corrupted</source>
-        <translation>Dati interni corrotti</translation>
-    </message>
-    <message>
-        <source>Failed to start upload</source>
-        <translation>Fallito avvio upload</translation>
-    </message>
-    <message>
-        <source>Failed to start download</source>
-        <translation>Fallito avvio download</translation>
-    </message>
-    <message>
-        <source>Library is damaged on server</source>
-        <translation>Libreria danneggiata sul server</translation>
-    </message>
-    <message>
-        <source>Conflict in merge</source>
-        <translation>Conflitto durante l&apos;unione</translation>
-    </message>
-    <message>
-        <source>Server version is too old</source>
-        <translation>La versione del server è troppo vecchia </translation>
-    </message>
-    <message>
         <source>Unknown error</source>
         <translation>Errore sconosciuto</translation>
     </message>
@@ -1766,10 +1746,6 @@ The library owner&apos;s storage space is used up.</source>
         <translation>Errore del Server</translation>
     </message>
     <message>
-        <source>Bad request</source>
-        <translation>Richiesta errata</translation>
-    </message>
-    <message>
         <source>Not enough memory</source>
         <translation>Memoria insufficiente </translation>
     </message>
@@ -1794,56 +1770,8 @@ The library owner&apos;s storage space is used up.</source>
         <translation>Lo spazio di archiviazione è esaurito.</translation>
     </message>
     <message>
-        <source>Internal server error</source>
-        <translation>Errore interno del server</translation>
-    </message>
-    <message>
-        <source>Your %1 client is too old</source>
-        <translation>Il tuo client %1 è troppo vecchio</translation>
-    </message>
-    <message>
-        <source>Failed to sync this library</source>
-        <translation>Fallita la sincronia di questa libreria</translation>
-    </message>
-    <message>
-        <source>Files are locked by other application</source>
-        <translation>File bloccato da un altro programma </translation>
-    </message>
-    <message>
-        <source>Library is deleted on server</source>
-        <translation>La liberia è stata cancellata sul server</translation>
-    </message>
-    <message>
-        <source>Error when accessing the local folder</source>
-        <translation>Errore durante l&apos;accesso della cartella locale</translation>
-    </message>
-    <message>
         <source>initializing...</source>
         <translation>inizializzazione...</translation>
-    </message>
-    <message>
-        <source>Failed to index local files</source>
-        <translation>Impossibile indicizzare i file locali</translation>
-    </message>
-    <message>
-        <source>Failed to check server information</source>
-        <translation>Impossibile controllare le informazioni del server</translation>
-    </message>
-    <message>
-        <source>Failed to create local files</source>
-        <translation>Impossibile creare i file in locale.</translation>
-    </message>
-    <message>
-        <source>Failed to merge local file changes</source>
-        <translation>Impossibile unire le modifiche al file locale</translation>
-    </message>
-    <message>
-        <source>Incorrect password. Please download again</source>
-        <translation>Password incorretta. Per favore scaricarlo di nuovo</translation>
-    </message>
-    <message>
-        <source>Internal error</source>
-        <translation>Errore interno</translation>
     </message>
     <message>
         <source>connecting server...</source>
@@ -2146,18 +2074,6 @@ The library owner&apos;s storage space is used up.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Error occurred in upload</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Error occurred in download</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <source>Permission denied on server. Please try to resync the library</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <source>Internal data corrupt on the client. Please try to resync the library</source>
         <translation type="unfinished"/>
     </message>
@@ -2166,11 +2082,107 @@ The library owner&apos;s storage space is used up.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>Do not have permission to sync the library</source>
+        <source>No permission to sync this folder</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <source>No permission to sync this folder</source>
+        <source>Removed all items from trash</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Removed items older than days %1 from trash</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Published draft</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Created draft</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Created file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Renamed file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Deleted draft</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Deleted file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Restored file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Moved file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Updated file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Created folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Renamed folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Deleted folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Restored folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Moved folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Created library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Renamed library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Deleted library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Restored library</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Created or updated a file in a non-writable library or folder</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Permission denied on server</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Concurrent updates to file. File is saved as conflict file</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>A folder that may contain not-yet-uploaded files is moved to seafile-recycle-bin folder.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>failed to open sync error id database</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -2521,10 +2533,6 @@ The library owner&apos;s storage space is used up.</source>
 <context>
     <name>SeafileApplet</name>
     <message>
-        <source>failed to add default account</source>
-        <translation>Impossibile aggiungere l&apos;account predefinito</translation>
-    </message>
-    <message>
         <source>Failed to initialize log: %s</source>
         <translation>Fallita inizializzazione log: %s</translation>
     </message>
@@ -2577,6 +2585,10 @@ The library owner&apos;s storage space is used up.</source>
     </message>
     <message>
         <source>%1 Internal Link:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>%1 Desktop Access Link:</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -2691,6 +2703,10 @@ The library owner&apos;s storage space is used up.</source>
     </message>
     <message>
         <source>Faild to fix sync status icons for Explorer</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>have some sync error</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -3017,6 +3033,14 @@ The library owner&apos;s storage space is used up.</source>
         <source>OK</source>
         <translation>OK</translation>
     </message>
+    <message>
+        <source>Upload Link</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <source>Upload link:</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>SslConfirmDialog</name>
@@ -3119,6 +3143,13 @@ The library owner&apos;s storage space is used up.</source>
     <message>
         <source>Time</source>
         <translation>Tempo</translation>
+    </message>
+</context>
+<context>
+    <name>SyncErrorsTableView</name>
+    <message>
+        <source>Delete file sync error failed</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

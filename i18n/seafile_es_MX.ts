@@ -521,6 +521,13 @@ falló al subir.</translation>
     </message>
 </context>
 <context>
+    <name>DataManager</name>
+    <message>
+        <source>Another copy or move operation is in progress. Please wait until it finishes.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>DownloadRepoDialog</name>
     <message>
         <source>Please enter the password</source>
@@ -858,6 +865,10 @@ falló al subir.</translation>
         <source>Failed to get link</source>
         <translation>Fallo al obtener enlace</translation>
     </message>
+    <message>
+        <source>Failed to get upload link information for file &quot;%1&quot;</source>
+        <translation>Fallo al obtener información del enlace de subida para el archivo &quot;%1&quot;</translation>
+    </message>
 </context>
 <context>
     <name>FileBrowserProgressDialog</name>
@@ -912,6 +923,10 @@ falló al subir.</translation>
     <message>
         <source>File save failed</source>
         <translation>Guardar archivo falló</translation>
+    </message>
+    <message>
+        <source>Index progress request error %1</source>
+        <translation>Index progress request error %1</translation>
     </message>
 </context>
 <context>
@@ -1085,12 +1100,28 @@ falló al subir.</translation>
         <source>Open Local Cache Folder</source>
         <translation>Abrir carpeta de caché local</translation>
     </message>
+    <message>
+        <source>&amp;Generate %1 Upload Link</source>
+        <translation>&amp;Generar Enlace %1 para Subir</translation>
+    </message>
 </context>
 <context>
     <name>FinderSyncHost</name>
     <message>
         <source>Failed to get link</source>
         <translation>Fallo al obtener enlace</translation>
+    </message>
+    <message>
+        <source>File &quot;%1&quot; is locked by %2</source>
+        <translation>El archivo &quot;%1&quot; está bloqueado por %2</translation>
+    </message>
+    <message>
+        <source>Failed to get lock information for file &quot;%1&quot;</source>
+        <translation>Fallo al obtener información de bloqueo para el archivo &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Failed to get upload link for file &quot;%1&quot;</source>
+        <translation>Fallo al obtener el enlace de subida para el archivo &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1366,10 +1397,6 @@ Do you like to download your default library?</source>
         <translation>Ingrese el nombre del equipo</translation>
     </message>
     <message>
-        <source>Failed to save current account</source>
-        <translation>Fallo al modificar la cuenta actual</translation>
-    </message>
-    <message>
         <source>%1 Server Address</source>
         <translation>Dirección del Servidor %1</translation>
     </message>
@@ -1483,22 +1510,12 @@ Do you like to download your default library?</source>
 <context>
     <name>MessagePoller</name>
     <message>
-        <source>&quot;%1&quot; is unsynced. 
-Reason: Deleted on server</source>
-        <translation>&quot;%1&quot; está desincronizada. 
-Motivo: Eliminada en el servidor</translation>
-    </message>
-    <message>
         <source>&quot;%1&quot; is synchronized</source>
         <translation>&quot;%1&quot; está sincronizada</translation>
     </message>
     <message>
         <source>Files uploaded to &quot;%1&quot;</source>
         <translation>Archivos subidos a &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <source>File %1 conflict</source>
-        <translation>Conflicto en archivo %1</translation>
     </message>
     <message>
         <source>Failed to sync file %1
@@ -1541,16 +1558,24 @@ La ruta al archivo contiene caracteres invalidos. No se sincroniza a esta comput
         <translation>Actualizaciones al archivo %1 son denegadas debido a los permisos de la carpeta.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; failed to sync. 
-Access denied to service</source>
-        <translation>&quot;%1&quot; falló al sincronizar. 
-Acceso denegado al servicio</translation>
+        <source>No permission to sync folder %1.</source>
+        <translation>No tiene permiso para sincronizar la carpeta %1.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; failed to sync.
-The library owner&apos;s storage space is used up.</source>
-        <translation>&quot;%1&quot; falló al sincronizar
-El espacio de almacenamiento del propietario de la biblioteca está agotado.</translation>
+        <source>Updates in read-only library %1 will not be uploaded.</source>
+        <translation>Las actualizaciones en la biblioteca de sólo lectura %1 no serán subidas.</translation>
+    </message>
+    <message>
+        <source>Concurrent updates to file. File %1 is saved as conflict file</source>
+        <translation>Actualizaciones concurrentes al archivo. El archivo %1 es salvado como archivo de conflicto</translation>
+    </message>
+    <message>
+        <source>Folder %1 is moved to seafile-recycle-bin folder since it contains not-yet uploaded files.</source>
+        <translation>La carpeta %1 es movida a la carpeta seafile-recycle-bin ya que contiene archivos que todavía no han sido subidos.</translation>
+    </message>
+    <message>
+        <source>Folder for library %1 is removed or moved. The library is unsynced.</source>
+        <translation>La carpeta para la biblioteca %1 fue movida o eliminada. La biblioteca está dessincronizada.</translation>
     </message>
 </context>
 <context>
@@ -1687,54 +1712,6 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
         <translation>desconocido</translation>
     </message>
     <message>
-        <source>Server has been removed</source>
-        <translation>El servidor fue removido</translation>
-    </message>
-    <message>
-        <source>You have not logged in to the server</source>
-        <translation>No ha iniciado sesión en el servidor</translation>
-    </message>
-    <message>
-        <source>You do not have permission to access this library</source>
-        <translation>No tiene permiso para acceder a esta biblioteca</translation>
-    </message>
-    <message>
-        <source>The storage space of the library owner has been used up</source>
-        <translation>El espacio del dueño de la biblioteca ha sido utilizado en su totalidad</translation>
-    </message>
-    <message>
-        <source>Remote service is not available</source>
-        <translation>Sevicio remoto no disponible</translation>
-    </message>
-    <message>
-        <source>Access denied to service</source>
-        <translation>Fallo al acceder al servicio</translation>
-    </message>
-    <message>
-        <source>Internal data corrupted</source>
-        <translation>Datos internos corruptos</translation>
-    </message>
-    <message>
-        <source>Failed to start upload</source>
-        <translation>Fallo al iniciar subida</translation>
-    </message>
-    <message>
-        <source>Failed to start download</source>
-        <translation>Fallo al iniciar descarga</translation>
-    </message>
-    <message>
-        <source>Library is damaged on server</source>
-        <translation>La biblioteca está dañada en el servidor</translation>
-    </message>
-    <message>
-        <source>Conflict in merge</source>
-        <translation>Conflicto al unir</translation>
-    </message>
-    <message>
-        <source>Server version is too old</source>
-        <translation>La versión del servidor es demasiado vieja</translation>
-    </message>
-    <message>
         <source>Unknown error</source>
         <translation>Error desconocido</translation>
     </message>
@@ -1775,10 +1752,6 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
         <translation>Error del servidor</translation>
     </message>
     <message>
-        <source>Bad request</source>
-        <translation>Solicitud incorrecta</translation>
-    </message>
-    <message>
         <source>Not enough memory</source>
         <translation>No hay suficiente memoria</translation>
     </message>
@@ -1803,56 +1776,8 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
         <translation>El espacio de almacenamiento ha sido utilizado en su totalidad</translation>
     </message>
     <message>
-        <source>Internal server error</source>
-        <translation>Error interno del servidor</translation>
-    </message>
-    <message>
-        <source>Your %1 client is too old</source>
-        <translation>Su cliente %1 es demasiado viejo</translation>
-    </message>
-    <message>
-        <source>Failed to sync this library</source>
-        <translation>Fallo al sincronizar esta biblioteca</translation>
-    </message>
-    <message>
-        <source>Files are locked by other application</source>
-        <translation>Los archivos están bloqueados por otra aplicación</translation>
-    </message>
-    <message>
-        <source>Library is deleted on server</source>
-        <translation>La biblioteca fue eliminada del servidor</translation>
-    </message>
-    <message>
-        <source>Error when accessing the local folder</source>
-        <translation>Error al acceder a la carpeta local</translation>
-    </message>
-    <message>
         <source>initializing...</source>
         <translation>inicializando...</translation>
-    </message>
-    <message>
-        <source>Failed to index local files</source>
-        <translation>Fallo al indexar archivos locales</translation>
-    </message>
-    <message>
-        <source>Failed to check server information</source>
-        <translation>Fallo al verificar la información del servidor</translation>
-    </message>
-    <message>
-        <source>Failed to create local files</source>
-        <translation>Fallo al crear archivos locales</translation>
-    </message>
-    <message>
-        <source>Failed to merge local file changes</source>
-        <translation>Fallo agregar cambios en el archivo</translation>
-    </message>
-    <message>
-        <source>Incorrect password. Please download again</source>
-        <translation>Contraseña incorrecta. Descargue de nuevo</translation>
-    </message>
-    <message>
-        <source>Internal error</source>
-        <translation>Error interno</translation>
     </message>
     <message>
         <source>connecting server...</source>
@@ -2155,18 +2080,6 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
         <translation>El cliente %1 ya se está ejecutando</translation>
     </message>
     <message>
-        <source>Error occurred in upload</source>
-        <translation>Ocurrió un error en la subida</translation>
-    </message>
-    <message>
-        <source>Error occurred in download</source>
-        <translation>Ocurrió un error en la descarga</translation>
-    </message>
-    <message>
-        <source>Permission denied on server. Please try to resync the library</source>
-        <translation>Permiso denegado en el servidor. Por favor intente resincronizar la biblioteca</translation>
-    </message>
-    <message>
         <source>Internal data corrupt on the client. Please try to resync the library</source>
         <translation>Datos internos corruptos en el cliente. Por favor intente resincronizar la biblioteca</translation>
     </message>
@@ -2175,12 +2088,108 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
         <translation>No tiene permiso de escritura en la biblioteca</translation>
     </message>
     <message>
-        <source>Do not have permission to sync the library</source>
-        <translation>No tiene permiso para sincronizar la biblioteca</translation>
-    </message>
-    <message>
         <source>No permission to sync this folder</source>
         <translation>No tiene permiso para sincronizar esta carpeta</translation>
+    </message>
+    <message>
+        <source>Removed all items from trash</source>
+        <translation>Todos los items eliminados de la papelera </translation>
+    </message>
+    <message>
+        <source>Removed items older than days %1 from trash</source>
+        <translation>Todos los items con mas de %1 días eliminados de la papelera</translation>
+    </message>
+    <message>
+        <source>Published draft</source>
+        <translation>Borrador publicado</translation>
+    </message>
+    <message>
+        <source>Created draft</source>
+        <translation>Borrador creado</translation>
+    </message>
+    <message>
+        <source>Created file</source>
+        <translation>Archivo creado</translation>
+    </message>
+    <message>
+        <source>Renamed file</source>
+        <translation>Archivo renombrado</translation>
+    </message>
+    <message>
+        <source>Deleted draft</source>
+        <translation>Borrador eliminado</translation>
+    </message>
+    <message>
+        <source>Deleted file</source>
+        <translation>Archivo eliminado</translation>
+    </message>
+    <message>
+        <source>Restored file</source>
+        <translation>Archivo recuperado</translation>
+    </message>
+    <message>
+        <source>Moved file</source>
+        <translation>Archivo movido</translation>
+    </message>
+    <message>
+        <source>Updated file</source>
+        <translation>Archivo actualizado</translation>
+    </message>
+    <message>
+        <source>Created folder</source>
+        <translation>Carpeta creada</translation>
+    </message>
+    <message>
+        <source>Renamed folder</source>
+        <translation>Carpeta renombrada</translation>
+    </message>
+    <message>
+        <source>Deleted folder</source>
+        <translation>Carpeta eliminada</translation>
+    </message>
+    <message>
+        <source>Restored folder</source>
+        <translation>Carpeta recuperada</translation>
+    </message>
+    <message>
+        <source>Moved folder</source>
+        <translation>Carpeta movida</translation>
+    </message>
+    <message>
+        <source>Created library</source>
+        <translation>Biblioteca creada</translation>
+    </message>
+    <message>
+        <source>Renamed library</source>
+        <translation>Biblioteca renombrada</translation>
+    </message>
+    <message>
+        <source>Deleted library</source>
+        <translation>Biblioteca eliminada</translation>
+    </message>
+    <message>
+        <source>Restored library</source>
+        <translation>Biblioteca recuperada</translation>
+    </message>
+    <message>
+        <source>Created or updated a file in a non-writable library or folder</source>
+        <translation>Creado o actualizado un archivo en una biblioteca o carpeta sin permiso de escritura</translation>
+    </message>
+    <message>
+        <source>Permission denied on server</source>
+        <translation>Permiso denegado en el servidor</translation>
+    </message>
+    <message>
+        <source>Concurrent updates to file. File is saved as conflict file</source>
+        <translation>Actualizaciones concurrentes al archivo. El archivo es salvado como archivo de conflicto</translation>
+    </message>
+    <message>
+        <source>A folder that may contain not-yet-uploaded files is moved to seafile-recycle-bin folder.</source>
+        <translation>Una carpeta que podría contener archivos todavía no subidos es movida a la carpeta seafile-recycle-bin</translation>
+    </message>
+    <message>
+        <source>failed to open sync error id database</source>
+        <translation>fallo al abrir la base de datos de id de errores de sincronización</translation>
     </message>
 </context>
 <context>
@@ -2530,10 +2539,6 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
 <context>
     <name>SeafileApplet</name>
     <message>
-        <source>failed to add default account</source>
-        <translation>fallo al agregar la cuenta predefinida</translation>
-    </message>
-    <message>
         <source>Failed to initialize log: %s</source>
         <translation>Fallo al crear registro: %s</translation>
     </message>
@@ -2587,6 +2592,10 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
     <message>
         <source>%1 Internal Link:</source>
         <translation>Enlace interno %1:</translation>
+    </message>
+    <message>
+        <source>%1 Desktop Access Link:</source>
+        <translation>%1 Desktop Access Link:</translation>
     </message>
 </context>
 <context>
@@ -2696,11 +2705,15 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
     </message>
     <message>
         <source>Successfully fixed sync status icons for Explorer</source>
-        <translation type="unfinished"/>
+        <translation>Iconos de estado de sincronización para Explorer reparados con éxito</translation>
     </message>
     <message>
         <source>Faild to fix sync status icons for Explorer</source>
-        <translation type="unfinished"/>
+        <translation>Fallo al reparar iconos de estado de sincronización para Explorer</translation>
+    </message>
+    <message>
+        <source>have some sync error</source>
+        <translation>tiene algún error de sincronización</translation>
     </message>
 </context>
 <context>
@@ -3026,6 +3039,14 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
         <source>OK</source>
         <translation>OK</translation>
     </message>
+    <message>
+        <source>Upload Link</source>
+        <translation>Enlace de Subida</translation>
+    </message>
+    <message>
+        <source>Upload link:</source>
+        <translation>Enlace de subida:</translation>
+    </message>
 </context>
 <context>
     <name>SslConfirmDialog</name>
@@ -3128,6 +3149,13 @@ El espacio de almacenamiento del propietario de la biblioteca está agotado.</tr
     <message>
         <source>Time</source>
         <translation>Hora</translation>
+    </message>
+</context>
+<context>
+    <name>SyncErrorsTableView</name>
+    <message>
+        <source>Delete file sync error failed</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

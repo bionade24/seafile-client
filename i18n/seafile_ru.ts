@@ -521,6 +521,13 @@ failed to upload.</source>
     </message>
 </context>
 <context>
+    <name>DataManager</name>
+    <message>
+        <source>Another copy or move operation is in progress. Please wait until it finishes.</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>DownloadRepoDialog</name>
     <message>
         <source>Please enter the password</source>
@@ -858,6 +865,10 @@ failed to upload.</source>
         <source>Failed to get link</source>
         <translation>Не удалось получить ссылку</translation>
     </message>
+    <message>
+        <source>Failed to get upload link information for file &quot;%1&quot;</source>
+        <translation>Не удалось получить информацию о ссылке для загрузки файла &quot;%1&quot;</translation>
+    </message>
 </context>
 <context>
     <name>FileBrowserProgressDialog</name>
@@ -912,6 +923,10 @@ failed to upload.</source>
     <message>
         <source>File save failed</source>
         <translation>Не удалось сохранить файл</translation>
+    </message>
+    <message>
+        <source>Index progress request error %1</source>
+        <translation>Ошибка запроса прогресса индекса %1</translation>
     </message>
 </context>
 <context>
@@ -1085,12 +1100,28 @@ failed to upload.</source>
         <source>Open Local Cache Folder</source>
         <translation>Открыть локальную папку кэша</translation>
     </message>
+    <message>
+        <source>&amp;Generate %1 Upload Link</source>
+        <translation>&amp;Создать %1 ссылку для загрузки</translation>
+    </message>
 </context>
 <context>
     <name>FinderSyncHost</name>
     <message>
         <source>Failed to get link</source>
         <translation>Не удалось получить ссылку</translation>
+    </message>
+    <message>
+        <source>File &quot;%1&quot; is locked by %2</source>
+        <translation>Файл &quot;%1&quot; заблокирован %2</translation>
+    </message>
+    <message>
+        <source>Failed to get lock information for file &quot;%1&quot;</source>
+        <translation>Не удалось получить информацию о блокировке файла &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>Failed to get upload link for file &quot;%1&quot;</source>
+        <translation>Не удалось получить ссылку для загрузки файла &quot;%1&quot;</translation>
     </message>
 </context>
 <context>
@@ -1366,10 +1397,6 @@ Do you like to download your default library?</source>
         <translation>Пожалуйста, введите имя компьютера</translation>
     </message>
     <message>
-        <source>Failed to save current account</source>
-        <translation>Не удалось сохранить текущий аккаунт</translation>
-    </message>
-    <message>
         <source>%1 Server Address</source>
         <translation>%1 Адрес сервера</translation>
     </message>
@@ -1483,22 +1510,12 @@ Do you like to download your default library?</source>
 <context>
     <name>MessagePoller</name>
     <message>
-        <source>&quot;%1&quot; is unsynced. 
-Reason: Deleted on server</source>
-        <translation>&quot;%1&quot; не синхронизирован. 
-Причина: Удалено на сервере</translation>
-    </message>
-    <message>
         <source>&quot;%1&quot; is synchronized</source>
         <translation>%1 синхронизирован</translation>
     </message>
     <message>
         <source>Files uploaded to &quot;%1&quot;</source>
         <translation>Файлы загружены в &quot;%1&quot;</translation>
-    </message>
-    <message>
-        <source>File %1 conflict</source>
-        <translation>Файл %1 конфликтует</translation>
     </message>
     <message>
         <source>Failed to sync file %1
@@ -1541,16 +1558,24 @@ File path contains invalid characters. It is not synced to this computer.</sourc
         <translation>Обновление файла %1 запрещено настройками разрешений папки.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; failed to sync. 
-Access denied to service</source>
-        <translation>&quot;%1&quot; не удалось синхронизировать. 
-Доступ к сервису запрещен</translation>
+        <source>No permission to sync folder %1.</source>
+        <translation>Нет разрешения на синхронизацию папки %1.</translation>
     </message>
     <message>
-        <source>&quot;%1&quot; failed to sync.
-The library owner&apos;s storage space is used up.</source>
-        <translation>&quot;%1&quot; не удалось синхронизировать.
-Квота объёма хранилища владельца библиотеки израсходована.</translation>
+        <source>Updates in read-only library %1 will not be uploaded.</source>
+        <translation>Обновления в библиотеке %1 только для чтения не будут загружены.</translation>
+    </message>
+    <message>
+        <source>Concurrent updates to file. File %1 is saved as conflict file</source>
+        <translation>Одновременные обновления в файл. Файл %1 сохранен как файл конфликта</translation>
+    </message>
+    <message>
+        <source>Folder %1 is moved to seafile-recycle-bin folder since it contains not-yet uploaded files.</source>
+        <translation>Папка %1 перемещена в папку seafile-recycle-bin, т.к. она содержит еще не загруженные файлы.</translation>
+    </message>
+    <message>
+        <source>Folder for library %1 is removed or moved. The library is unsynced.</source>
+        <translation>Папка для библиотеки %1 удалена или перемещена. Библиотека не синхронизирована.</translation>
     </message>
 </context>
 <context>
@@ -1687,54 +1712,6 @@ The library owner&apos;s storage space is used up.</source>
         <translation>Неизвестно</translation>
     </message>
     <message>
-        <source>Server has been removed</source>
-        <translation>Сервер был удален</translation>
-    </message>
-    <message>
-        <source>You have not logged in to the server</source>
-        <translation>Вы не авторизованы на сервере</translation>
-    </message>
-    <message>
-        <source>You do not have permission to access this library</source>
-        <translation>У вас нет доступа к этой библиотеке</translation>
-    </message>
-    <message>
-        <source>The storage space of the library owner has been used up</source>
-        <translation>Владельцем библиотеки израсходована выделенная квота</translation>
-    </message>
-    <message>
-        <source>Remote service is not available</source>
-        <translation>Удаленная служба не доступна</translation>
-    </message>
-    <message>
-        <source>Access denied to service</source>
-        <translation>Доступ запрещен</translation>
-    </message>
-    <message>
-        <source>Internal data corrupted</source>
-        <translation>Внутренние данные повреждены</translation>
-    </message>
-    <message>
-        <source>Failed to start upload</source>
-        <translation>Не удалось запустить загрузку</translation>
-    </message>
-    <message>
-        <source>Failed to start download</source>
-        <translation>Не удалось запустить скачивание</translation>
-    </message>
-    <message>
-        <source>Library is damaged on server</source>
-        <translation>Библиотека повреждена на сервере</translation>
-    </message>
-    <message>
-        <source>Conflict in merge</source>
-        <translation>Конфликт при слиянии</translation>
-    </message>
-    <message>
-        <source>Server version is too old</source>
-        <translation>Версия сервера устарела</translation>
-    </message>
-    <message>
         <source>Unknown error</source>
         <translation>Неизвестная ошибка</translation>
     </message>
@@ -1775,10 +1752,6 @@ The library owner&apos;s storage space is used up.</source>
         <translation>Ошибка сервера</translation>
     </message>
     <message>
-        <source>Bad request</source>
-        <translation>Неверный запрос</translation>
-    </message>
-    <message>
         <source>Not enough memory</source>
         <translation>Недостаточно памяти</translation>
     </message>
@@ -1803,56 +1776,8 @@ The library owner&apos;s storage space is used up.</source>
         <translation>Квота хранения была израсходована</translation>
     </message>
     <message>
-        <source>Internal server error</source>
-        <translation>Внутренняя ошибка сервера</translation>
-    </message>
-    <message>
-        <source>Your %1 client is too old</source>
-        <translation>Ваш %1 клиент устарел</translation>
-    </message>
-    <message>
-        <source>Failed to sync this library</source>
-        <translation>Не удалось синхронизировать эту библиотеку</translation>
-    </message>
-    <message>
-        <source>Files are locked by other application</source>
-        <translation>Файлы заблокированы другим приложением</translation>
-    </message>
-    <message>
-        <source>Library is deleted on server</source>
-        <translation>Библиотека удалена на сервере</translation>
-    </message>
-    <message>
-        <source>Error when accessing the local folder</source>
-        <translation>Ошибка при доступе к локальной папке</translation>
-    </message>
-    <message>
         <source>initializing...</source>
         <translation>Инициализация...</translation>
-    </message>
-    <message>
-        <source>Failed to index local files</source>
-        <translation>Не удалось проиндексировать локальные файлы</translation>
-    </message>
-    <message>
-        <source>Failed to check server information</source>
-        <translation>Не удалось проверить информацию о сервере</translation>
-    </message>
-    <message>
-        <source>Failed to create local files</source>
-        <translation>Не удалось создать локальные файлы</translation>
-    </message>
-    <message>
-        <source>Failed to merge local file changes</source>
-        <translation>Не удалось объединить локальные изменения файлов</translation>
-    </message>
-    <message>
-        <source>Incorrect password. Please download again</source>
-        <translation>Неверный пароль. Пожалуйста, попробуйте снова</translation>
-    </message>
-    <message>
-        <source>Internal error</source>
-        <translation>Внутренняя ошибка</translation>
     </message>
     <message>
         <source>connecting server...</source>
@@ -2155,18 +2080,6 @@ The library owner&apos;s storage space is used up.</source>
         <translation>%1 клиент уже запущен</translation>
     </message>
     <message>
-        <source>Error occurred in upload</source>
-        <translation>Ошибка при загрузке</translation>
-    </message>
-    <message>
-        <source>Error occurred in download</source>
-        <translation>Ошибка при скачивании</translation>
-    </message>
-    <message>
-        <source>Permission denied on server. Please try to resync the library</source>
-        <translation>Доступ запрещен на сервере. Пожалуйста, попробуйте повторно синхронизировать библиотеку</translation>
-    </message>
-    <message>
         <source>Internal data corrupt on the client. Please try to resync the library</source>
         <translation>Внутренние данные повреждены на клиенте. Пожалуйста, попробуйте повторно синхронизировать библиотеку</translation>
     </message>
@@ -2175,12 +2088,108 @@ The library owner&apos;s storage space is used up.</source>
         <translation>Нет разрешения на запись в библиотеку</translation>
     </message>
     <message>
-        <source>Do not have permission to sync the library</source>
-        <translation>Нет разрешения на синхронизацию библиотеки</translation>
-    </message>
-    <message>
         <source>No permission to sync this folder</source>
         <translation>Нет разрешения на синхронизацию этой папки</translation>
+    </message>
+    <message>
+        <source>Removed all items from trash</source>
+        <translation>Удалены все объекты из корзины</translation>
+    </message>
+    <message>
+        <source>Removed items older than days %1 from trash</source>
+        <translation>Удалены объекты старше %1 дней из корзины</translation>
+    </message>
+    <message>
+        <source>Published draft</source>
+        <translation>Черновик опубликован</translation>
+    </message>
+    <message>
+        <source>Created draft</source>
+        <translation>Черновик создан</translation>
+    </message>
+    <message>
+        <source>Created file</source>
+        <translation>Файл создан</translation>
+    </message>
+    <message>
+        <source>Renamed file</source>
+        <translation>Файл переименован</translation>
+    </message>
+    <message>
+        <source>Deleted draft</source>
+        <translation>Черновик удален</translation>
+    </message>
+    <message>
+        <source>Deleted file</source>
+        <translation>Файл удален</translation>
+    </message>
+    <message>
+        <source>Restored file</source>
+        <translation>Файл восстановлен</translation>
+    </message>
+    <message>
+        <source>Moved file</source>
+        <translation>Файл перемещен</translation>
+    </message>
+    <message>
+        <source>Updated file</source>
+        <translation>Файл обновлен</translation>
+    </message>
+    <message>
+        <source>Created folder</source>
+        <translation>Папка создана</translation>
+    </message>
+    <message>
+        <source>Renamed folder</source>
+        <translation>Папка переименована</translation>
+    </message>
+    <message>
+        <source>Deleted folder</source>
+        <translation>Папка удалена</translation>
+    </message>
+    <message>
+        <source>Restored folder</source>
+        <translation>Папка восстановлена</translation>
+    </message>
+    <message>
+        <source>Moved folder</source>
+        <translation>Папка перемещена</translation>
+    </message>
+    <message>
+        <source>Created library</source>
+        <translation>Библиотека создана</translation>
+    </message>
+    <message>
+        <source>Renamed library</source>
+        <translation>Библиотека переименована</translation>
+    </message>
+    <message>
+        <source>Deleted library</source>
+        <translation>Библиотека удалена</translation>
+    </message>
+    <message>
+        <source>Restored library</source>
+        <translation>Библиотека восстановлена</translation>
+    </message>
+    <message>
+        <source>Created or updated a file in a non-writable library or folder</source>
+        <translation>Создан или обновлен файл в недоступной для записи библиотеке или папке</translation>
+    </message>
+    <message>
+        <source>Permission denied on server</source>
+        <translation>Доступ запрещен на сервере</translation>
+    </message>
+    <message>
+        <source>Concurrent updates to file. File is saved as conflict file</source>
+        <translation>Одновременные обновления в файл. Файл сохранен как файл конфликта</translation>
+    </message>
+    <message>
+        <source>A folder that may contain not-yet-uploaded files is moved to seafile-recycle-bin folder.</source>
+        <translation>Папка, которая может содержать еще не загруженные файлы, перемещена в папку seafile-recycle-bin.</translation>
+    </message>
+    <message>
+        <source>failed to open sync error id database</source>
+        <translation>не удалось открыть базу данных с кодом ошибки синхронизации</translation>
     </message>
 </context>
 <context>
@@ -2528,10 +2537,6 @@ The library owner&apos;s storage space is used up.</source>
 <context>
     <name>SeafileApplet</name>
     <message>
-        <source>failed to add default account</source>
-        <translation>не удалось добавить аккаунт по умолчанию</translation>
-    </message>
-    <message>
         <source>Failed to initialize log: %s</source>
         <translation>Ошибка инициализации лога: %s</translation>
     </message>
@@ -2585,6 +2590,10 @@ The library owner&apos;s storage space is used up.</source>
     <message>
         <source>%1 Internal Link:</source>
         <translation>%1 Внутренняя ссылка:</translation>
+    </message>
+    <message>
+        <source>%1 Desktop Access Link:</source>
+        <translation>%1 ссылка для доступа к рабочему столу:</translation>
     </message>
 </context>
 <context>
@@ -2694,11 +2703,15 @@ The library owner&apos;s storage space is used up.</source>
     </message>
     <message>
         <source>Successfully fixed sync status icons for Explorer</source>
-        <translation type="unfinished"/>
+        <translation>Успешно исправлены значки состояния синхронизации для проводника</translation>
     </message>
     <message>
         <source>Faild to fix sync status icons for Explorer</source>
-        <translation type="unfinished"/>
+        <translation>Не удалось исправить значки состояния синхронизации для проводника</translation>
+    </message>
+    <message>
+        <source>have some sync error</source>
+        <translation>есть некоторые ошибки при синхронизации</translation>
     </message>
 </context>
 <context>
@@ -3024,6 +3037,14 @@ The library owner&apos;s storage space is used up.</source>
         <source>OK</source>
         <translation>ОК</translation>
     </message>
+    <message>
+        <source>Upload Link</source>
+        <translation>Ссылка для загрузки</translation>
+    </message>
+    <message>
+        <source>Upload link:</source>
+        <translation>Ссылка для загрузки:</translation>
+    </message>
 </context>
 <context>
     <name>SslConfirmDialog</name>
@@ -3126,6 +3147,13 @@ The library owner&apos;s storage space is used up.</source>
     <message>
         <source>Time</source>
         <translation>Время</translation>
+    </message>
+</context>
+<context>
+    <name>SyncErrorsTableView</name>
+    <message>
+        <source>Delete file sync error failed</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>

@@ -27,7 +27,7 @@ extern "C" {
 #endif
 
 #include "rpc-client.h"
-
+#include <seafile/seafile-error.h>
 
 namespace {
 
@@ -157,30 +157,25 @@ int SeafileRpcClient::setAutoSync(bool autoSync)
 }
 
 int SeafileRpcClient::downloadRepo(const QString& id,
-                                   int repo_version, const QString& relayId,
-                                   const QString& name, const QString& wt,
-                                   const QString& token, const QString& passwd,
-                                   const QString& magic, const QString& peerAddr,
-                                   const QString& port, const QString& email,
-                                   const QString& random_key, int enc_version,
-                                   const QString& more_info,
+                                   int repo_version, const QString& name,
+                                   const QString& wt, const QString& token,
+                                   const QString& passwd, const QString& magic,
+                                   const QString& email, const QString& random_key,
+                                   int enc_version, const QString& more_info,
                                    QString *error_ret)
 {
     GError *error = NULL;
     char *ret = searpc_client_call__string(
         seafile_rpc_client_,
         "seafile_download",
-        &error, 14,
+        &error, 11,
         "string", toCStr(id),
         "int", repo_version,
-        "string", toCStr(relayId),
         "string", toCStr(name),
         "string", toCStr(wt),
         "string", toCStr(token),
         "string", toCStr(passwd),
         "string", toCStr(magic),
-        "string", toCStr(peerAddr),
-        "string", toCStr(port),
         "string", toCStr(email),
         "string", toCStr(random_key),
         "int", enc_version,
@@ -199,30 +194,25 @@ int SeafileRpcClient::downloadRepo(const QString& id,
 }
 
 int SeafileRpcClient::cloneRepo(const QString& id,
-                                int repo_version, const QString& relayId,
-                                const QString &name, const QString &wt,
-                                const QString &token, const QString &passwd,
-                                const QString &magic, const QString &peerAddr,
-                                const QString &port, const QString &email,
-                                const QString& random_key, int enc_version,
-                                const QString& more_info,
+                                int repo_version, const QString &name,
+                                const QString &wt, const QString &token,
+                                const QString &passwd, const QString &magic,
+                                const QString &email, const QString& random_key,
+                                int enc_version, const QString& more_info,
                                 QString *error_ret)
 {
     GError *error = NULL;
     char *ret = searpc_client_call__string(
         seafile_rpc_client_,
         "seafile_clone",
-        &error, 14,
+        &error, 11,
         "string", toCStr(id),
         "int", repo_version,
-        "string", toCStr(relayId),
         "string", toCStr(name),
         "string", toCStr(wt),
         "string", toCStr(token),
         "string", toCStr(passwd),
         "string", toCStr(magic),
-        "string", toCStr(peerAddr),
-        "string", toCStr(port),
         "string", toCStr(email),
         "string", toCStr(random_key),
         "int", enc_version,
@@ -367,7 +357,7 @@ bool SeafileRpcClient::hasLocalRepo(const QString& repo_id)
 void SeafileRpcClient::getSyncStatus(LocalRepo &repo)
 {
     if (repo.worktree_invalid) {
-        repo.setSyncInfo("error", "invalid worktree");
+        qWarning("get a invalid worktree when getting sync status");
         return;
     }
 
@@ -390,20 +380,10 @@ void SeafileRpcClient::getSyncStatus(LocalRepo &repo)
     }
 
     char *state = NULL;
-    char *err = NULL;
-    char *err_detail = NULL;
-    g_object_get(task, "state", &state, "error", &err, "err_detail", &err_detail, NULL);
+    int err = SYNC_ERROR_ID_NO_ERROR;
+    g_object_get(task, "state", &state, "error", &err, NULL);
 
-    // seaf-daemon would retry three times for errors like quota/permission
-    // before setting the "state" field to "error", but the GUI should display
-    // the error from the beginning.
-    if (err != NULL && strlen(err) > 0 && strcmp(err, "Success") != 0) {
-        state = g_strdup("error");
-    }
-
-    repo.setSyncInfo(state,
-                     g_strcmp0(state, "error") == 0 ? err : NULL,
-                     err_detail);
+    repo.setSyncInfo(state, err);
 
     if (repo.sync_state == LocalRepo::SYNC_STATE_ING) {
         getRepoTransferInfo(repo.id, &repo.transfer_rate, &repo.transfer_percentage, &repo.rt_state);
@@ -417,8 +397,6 @@ void SeafileRpcClient::getSyncStatus(LocalRepo &repo)
     }
 
     g_free (state);
-    g_free (err);
-    g_free (err_detail);
     g_object_unref(task);
 }
 
@@ -441,9 +419,6 @@ int SeafileRpcClient::getCloneTasks(std::vector<CloneTask> *tasks)
 
         if (task.state == "fetch") {
             getTransferDetail(&task);
-        } else if (task.state == "error") {
-            if (!task.error_detail.isNull())
-                task.error_str = task.error_detail;
         }
         task.translateStateInfo();
         tasks->push_back(task);
@@ -572,7 +547,7 @@ int SeafileRpcClient::getCloneTasksCount(int *count)
     return 0;
 }
 
-int SeafileRpcClient::unsyncReposByAccount(const QString& server_addr,
+int SeafileRpcClient::unsyncReposByAccount(const QUrl& server_url,
                                            const QString& email,
                                            QString *err)
 {
@@ -580,7 +555,7 @@ int SeafileRpcClient::unsyncReposByAccount(const QString& server_addr,
     int ret =  searpc_client_call__int (seafile_rpc_client_,
                                         "seafile_unsync_repos_by_account",
                                         &error, 2,
-                                        "string", toCStr(server_addr),
+                                        "string", toCStr(server_url.toString()),
                                         "string", toCStr(email));
 
     if (ret < 0 && err) {
@@ -735,7 +710,7 @@ QString SeafileRpcClient::getCcnetPeerId()
     return "";
 }
 
-int SeafileRpcClient::updateReposServerHost(const QString& old_host,
+int SeafileRpcClient::updateReposServerHost(const QUrl& old_server_url,
                                             const QString& new_host,
                                             const QString& new_server_url,
                                             QString *err)
@@ -744,7 +719,7 @@ int SeafileRpcClient::updateReposServerHost(const QString& old_host,
     int ret =  searpc_client_call__int (seafile_rpc_client_,
                                         "seafile_update_repos_server_host",
                                         &error, 3,
-                                        "string", toCStr(old_host),
+                                        "string", toCStr(old_server_url.toString()),
                                         "string", toCStr(new_host),
                                         "string", toCStr(new_server_url));
 
@@ -802,7 +777,7 @@ int SeafileRpcClient::setRepoProperty(const QString &repo_id,
     return ret;
 }
 
-int SeafileRpcClient::removeSyncTokensByAccount(const QString& server_addr,
+int SeafileRpcClient::removeSyncTokensByAccount(const QUrl& server_url,
                                                 const QString& email,
                                                 QString *err)
 {
@@ -810,7 +785,7 @@ int SeafileRpcClient::removeSyncTokensByAccount(const QString& server_addr,
     int ret =  searpc_client_call__int (seafile_rpc_client_,
                                         "seafile_remove_repo_tokens_by_account",
                                         &error, 2,
-                                        "string", toCStr(server_addr),
+                                        "string", toCStr(server_url.toString()),
                                         "string", toCStr(email));
 
     if (ret < 0 && err) {
@@ -893,7 +868,8 @@ int SeafileRpcClient::generateMagicAndRandomKey(int enc_version,
                                                 const QString &repo_id,
                                                 const QString &passwd,
                                                 QString *magic,
-                                                QString *random_key)
+                                                QString *random_key,
+                                                QString *salt)
 {
     GError *error = NULL;
     GObject *obj = searpc_client_call__object (
@@ -912,10 +888,21 @@ int SeafileRpcClient::generateMagicAndRandomKey(int enc_version,
 
     char *c_magic = NULL;
     char *c_random_key = NULL;
-    g_object_get (obj,
-                  "magic", &c_magic,
-                  "random_key", &c_random_key,
-                  NULL);
+    char *c_salt = NULL;
+    if (enc_version == 3) {
+        g_object_get (obj,
+                    "magic", &c_magic,
+                    "random_key", &c_random_key,
+                    "salt", &c_salt,
+                    NULL);
+        *salt = QString(c_salt);
+        g_free(c_salt);
+    } else {
+        g_object_get (obj,
+            "magic", &c_magic,
+            "random_key", &c_random_key,
+            NULL);
+    }
 
     *magic = QString(c_magic);
     *random_key = QString(c_random_key);
@@ -1018,5 +1005,21 @@ bool SeafileRpcClient::getSyncNotification(json_t **ret_obj)
 
     *ret_obj = ret;
 
+    return true;
+}
+
+bool SeafileRpcClient::deleteFileAsyncErrorById(int id)
+{
+    GError *error = NULL;
+    int ret = searpc_client_call__int (
+            seafile_rpc_client_,
+            "seafile_del_file_sync_error_by_id",
+            &error, 1,
+            "int", id
+    );
+    if (error) {
+        g_error_free(error);
+        return false;
+    }
     return true;
 }

@@ -3,11 +3,16 @@
 #include <jansson.h>
 #include <QtNetwork>
 #include <QScopedPointer>
+#include <QMapIterator>
 
 #include "account.h"
 #include "api/api-error.h"
 #include "seaf-dirent.h"
 #include "utils/utils.h"
+#include "utils/file-utils.h"
+#include "src/open-local-helper.h"
+#include "utils/json-utils.h"
+#include "seafile-applet.h"
 
 namespace {
 
@@ -17,14 +22,39 @@ const char kGetFileSharedLinkUrl[] = "api2/repos/%1/file/shared-link/";
 const char kGetFileUploadUrl[] = "api2/repos/%1/upload-link/";
 const char kGetFileUpdateUrl[] = "api2/repos/%1/update-link/";
 const char kGetStarredFilesUrl[] = "api2/starredfiles/";
+const char kQueryAsyncOperationProgressUrl[] = "api/v2.1/query-copy-move-progress/";
+const char kCopyMoveSingleItemUrl[] = "api/v2.1/copy-move-task/";
 const char kFileOperationCopy[] = "api2/repos/%1/fileops/copy/";
+const char kAsyncCopyMultipleItems[] = "api/v2.1/repos/async-batch-copy-item/";
+const char kAsyncMoveMultipleItems[] = "api/v2.1/repos/async-batch-move-item/";
 const char kFileOperationMove[] = "api2/repos/%1/fileops/move/";
 const char kRemoveDirentsURL[] = "api2/repos/%1/fileops/delete/";
 const char kGetFileUploadedBytesUrl[] = "api/v2.1/repos/%1/file-uploaded-bytes/";
 const char kGetSmartLink[] = "api/v2.1/smart-link/";
+const char kGetUploadLinkUrl[] = "api/v2.1/upload-links/";
+
 //const char kGetFileFromRevisionUrl[] = "api2/repos/%1/file/revision/";
 //const char kGetFileDetailUrl[] = "api2/repos/%1/file/detail/";
 //const char kGetFileHistoryUrl[] = "api2/repos/%1/file/history/";
+
+QByteArray assembleJsonReq(const QString&  repo_id, const QString& src_dir_path,
+                           const QStringList& src_file_names, const QString& dst_repo_id,
+                           const QString& dst_dir_path)
+{
+    QJsonObject json_obj;
+    QJsonArray dirents_array;
+    json_obj.insert("src_repo_id", repo_id);
+    json_obj.insert("src_parent_dir", src_dir_path);
+    Q_FOREACH(const QString & src_file_name, src_file_names) {
+            dirents_array.append(src_file_name);
+    }
+    json_obj.insert("src_dirents", dirents_array);
+    json_obj.insert("dst_repo_id", dst_repo_id);
+    json_obj.insert("dst_parent_dir", dst_dir_path);
+
+    QJsonDocument json_document(json_obj);
+    return json_document.toJson(QJsonDocument::Compact);
+}
 
 } // namespace
 
@@ -170,6 +200,7 @@ void GetFileUploadLinkRequest::requestSuccess(QNetworkReply& reply)
     emit failed(ApiError::fromHttpError(500));
 }
 
+
 RenameDirentRequest::RenameDirentRequest(const Account &account,
                                          const QString &repo_id,
                                          const QString &path,
@@ -229,6 +260,7 @@ void RemoveDirentsRequest::requestSuccess(QNetworkReply& reply)
     emit success(repo_id_);
 }
 
+
 MoveFileRequest::MoveFileRequest(const Account &account,
                                  const QString &repo_id,
                                  const QString &path,
@@ -249,6 +281,172 @@ void MoveFileRequest::requestSuccess(QNetworkReply& reply)
 {
     emit success();
 }
+
+
+QueryAsyncOperationProgress::QueryAsyncOperationProgress(const Account &account,
+                                                         const QString& task_id)
+        : SeafileApiRequest(
+        account.getAbsoluteUrl(kQueryAsyncOperationProgressUrl),
+        SeafileApiRequest::METHOD_GET, account.token)
+{
+    setUrlParam("task_id", task_id);
+}
+
+void QueryAsyncOperationProgress::requestSuccess(QNetworkReply& reply)
+{
+    json_error_t error;
+    json_t* root = parseJSON(reply, &error);
+    if (!root) {
+        qWarning("failed to parse json:%s\n", error.text);
+        return;
+    }
+
+    Json json(root);
+    bool is_success = json.getBool("successful");
+    bool is_failed = json.getBool("failed");
+    if (is_success) {
+        emit success();
+    } else if (is_failed) {
+        qWarning("operation failed");
+        emit failed(ApiError::fromHttpError(500));
+    }
+}
+
+
+AsyncCopyAndMoveOneItemRequest::AsyncCopyAndMoveOneItemRequest(const Account &account,
+                                                               const QString &src_repo_id,
+                                                               const QString &src_parent_dir,
+                                                               const QString &src_dirent_name,
+                                                               const QString &dst_repo_id,
+                                                               const QString &dst_parent_dir,
+                                                               const QString &operation,
+                                                               const QString &dirent_type)
+    : SeafileApiRequest(
+          account.getAbsoluteUrl(QString(kCopyMoveSingleItemUrl)),
+          SeafileApiRequest::METHOD_POST, account.token),
+    account_(account),
+    repo_id_(src_repo_id),
+    src_dir_path_(src_parent_dir),
+    src_dirent_name_(src_dirent_name),
+    dst_repo_id_(dst_repo_id),
+    dst_repo_path_(dst_parent_dir),
+    operation_(operation),
+    dirent_type_(dirent_type)
+{
+    setFormParam("src_repo_id", src_repo_id);
+    setFormParam("src_parent_dir", src_parent_dir);
+    setFormParam("src_dirent_name", src_dirent_name);
+    setFormParam("dst_repo_id", dst_repo_id);
+    setFormParam("dst_parent_dir", dst_parent_dir);
+    setFormParam("operation", operation);
+    setFormParam("dirent_type", dirent_type);
+}
+
+void AsyncCopyAndMoveOneItemRequest::requestSuccess(QNetworkReply& reply)
+{
+    json_error_t error;
+    json_t* root = parseJSON(reply, &error);
+    if (!root) {
+        qWarning("failed to parse json:%s\n", error.text);
+        return;
+    }
+
+    Json json(root);
+    QString task_id= json.getString("task_id");
+    emit success(task_id);
+}
+
+
+// Asynchronous copy multiple items
+AsyncCopyMultipleItemsRequest::AsyncCopyMultipleItemsRequest(const Account &account,
+                                                             const QString &repo_id,
+                                                             const QString &src_dir_path,
+                                                             const QMap<QString, int>&src_dirents,
+                                                             const QString &dst_repo_id,
+                                                             const QString &dst_dir_path)
+     : SeafileApiRequest(
+             account.getAbsoluteUrl(QString(kAsyncCopyMultipleItems)),
+             SeafileApiRequest::METHOD_POST, account.token),
+       account_(account),
+       repo_id_(repo_id),
+       src_dir_path_(src_dir_path),
+       src_dirents_(src_dirents),
+       dst_repo_id_(dst_repo_id),
+       dst_repo_path_(dst_dir_path)
+
+{
+
+    setHeader("Content-Type","application/json");
+    setHeader("Accept", "application/json");
+
+    QStringList file_names;
+    for ( const QString & file_name : src_dirents.keys()) {
+        file_names.push_back(file_name);
+    }
+    QByteArray byte_array = assembleJsonReq(repo_id, src_dir_path, file_names,
+                                            dst_repo_id, dst_dir_path);
+    setRequestBody(byte_array);
+}
+
+void AsyncCopyMultipleItemsRequest::requestSuccess(QNetworkReply& reply)
+{
+    json_error_t error;
+    json_t* root = parseJSON(reply, &error);
+    if (!root) {
+        qWarning("failed to parse json:%s\n", error.text);
+        return;
+    }
+
+    Json json(root);
+    QString task_id = json.getString("task_id");
+    emit success(task_id);
+}
+
+
+// Asynchronous api for move multiple items
+AsyncMoveMultipleItemsRequest::AsyncMoveMultipleItemsRequest(const Account &account,
+                                                             const QString &repo_id,
+                                                             const QString &src_dir_path,
+                                                             const QMap<QString, int> &src_dirents,
+                                                             const QString &dst_repo_id,
+                                                             const QString &dst_dir_path)
+        : SeafileApiRequest(
+            account.getAbsoluteUrl(QString(kAsyncMoveMultipleItems)),
+            SeafileApiRequest::METHOD_POST, account.token),
+          account_(account),
+          repo_id_(repo_id),
+          src_dir_path_(src_dir_path),
+          src_dirents_(src_dirents),
+          dst_repo_id_(dst_repo_id),
+          dst_repo_path_(dst_dir_path)
+{
+    setHeader("Content-Type","application/json");
+    setHeader("Accept", "application/json");
+
+    QStringList file_names;
+    for ( const QString & file_name : src_dirents.keys()) {
+        file_names.push_back(file_name);
+    }
+
+    QByteArray byte_array = assembleJsonReq(repo_id, src_dir_path, file_names,
+                                            dst_repo_id, dst_dir_path);
+    setRequestBody(byte_array);
+}
+
+void AsyncMoveMultipleItemsRequest::requestSuccess(QNetworkReply& reply)
+{
+    json_error_t error;
+    json_t* root = parseJSON(reply, &error);
+    if (!root) {
+        qWarning("failed to parse json:%s\n", error.text);
+        return;
+    }
+
+    Json json(root);
+    QString task_id = json.getString("task_id");
+    emit success(task_id);
+}
+
 
 CopyMultipleFilesRequest::CopyMultipleFilesRequest(const Account &account,
                                                    const QString &repo_id,
@@ -432,7 +630,8 @@ GetSmartLinkRequest::GetSmartLinkRequest(const Account& account,
           SeafileApiRequest::METHOD_GET, account.token),
       repo_id_(repo_id),
       path_(path),
-      is_dir_(is_dir)
+      is_dir_(is_dir),
+      protocol_link_(OpenLocalHelper::instance()->generateLocalFileSeafileUrl(repo_id, account, path).toEncoded())
 {
     setUrlParam("repo_id", repo_id);
     setUrlParam("path", path);
@@ -453,6 +652,83 @@ void GetSmartLinkRequest::requestSuccess(QNetworkReply& reply)
     const char* smart_link =
         json_string_value(json_object_get(json.data(), "smart_link"));
 
-    emit success(smart_link);
+    emit success(smart_link, protocol_link_);
 }
 
+GetFileLockInfoRequest::GetFileLockInfoRequest(const Account& account,
+                                               const QString &repo_id,
+                                               const QString &path)
+    : SeafileApiRequest(
+          account.getAbsoluteUrl(QString(kGetDirentsUrl)),
+          SeafileApiRequest::METHOD_GET, account.token),
+      path_(path)
+{
+    // Seahub doesn't provide a standalone api for getting file lock
+    // info. We have to get that from dirents api.
+    dirents_req_.reset(
+        new GetDirentsRequest(account, repo_id, ::getParentPath(path_)));
+    connect(dirents_req_.data(),
+            SIGNAL(success(bool, const QList<SeafDirent> &, const QString &)),
+            this,
+            SLOT(onGetDirentsSuccess(bool, const QList<SeafDirent> &)));
+    connect(dirents_req_.data(),
+            SIGNAL(failed(const ApiError &)),
+            this,
+            SIGNAL(failed(const ApiError &)));
+}
+
+void GetFileLockInfoRequest::send()
+{
+    dirents_req_->send();
+}
+
+void GetFileLockInfoRequest::requestSuccess(QNetworkReply& reply)
+{
+    // Just a place holder. A `GetFileLockInfoRequest` is a wrapper around a
+    // `GetDirentsRequest`, which really sends the api
+    // requests.
+}
+
+void GetFileLockInfoRequest::onGetDirentsSuccess(bool current_readonly, const QList<SeafDirent> &dirents)
+{
+    const QString name = ::getBaseName(path_);
+    foreach(const SeafDirent& dirent, dirents) {
+        if (dirent.name == name) {
+            const QString lock_owner = dirent.getLockOwnerDisplayString();
+            if (!lock_owner.isEmpty()) {
+                emit success(true, lock_owner);
+            } else {
+                emit success(false, "");
+            }
+            return;
+        }
+    }
+    emit success(false, "");
+}
+
+GetUploadLinkRequest::GetUploadLinkRequest(const Account& account,
+                                           const QString& repo_id,
+                                           const QString& path)
+        : SeafileApiRequest(
+        account.getAbsoluteUrl(QString(kGetUploadLinkUrl)),
+        SeafileApiRequest::METHOD_POST, account.token),
+        path_(path)
+{
+    setFormParam("repo_id", repo_id);
+    setFormParam("path", path);
+}
+
+void GetUploadLinkRequest::requestSuccess(QNetworkReply& reply)
+{
+    json_error_t error;
+    json_t* root = parseJSON(reply, &error);
+    if (!root) {
+        qWarning("failed to parse json:%s\n", error.text);
+        emit failed(ApiError::fromJsonError());
+        return;
+    }
+    QScopedPointer<json_t, JsonPointerCustomDeleter> json(root);
+    QMap<QString, QVariant> dict = mapFromJSON(json.data(), &error);
+    QString upload_link = dict["link"].toString();
+    emit success(upload_link);
+}

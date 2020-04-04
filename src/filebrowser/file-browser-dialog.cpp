@@ -80,7 +80,7 @@ QString appendTrailingSlash(const QString& input) {
 
 } // namespace
 
-QStringList FileBrowserDialog::file_names_to_be_pasted_;
+QMap<QString, int> FileBrowserDialog::file_names_to_be_pasted_;
 QString FileBrowserDialog::dir_path_to_be_pasted_from_;
 QString FileBrowserDialog::repo_id_to_be_pasted_from_;
 Account FileBrowserDialog::account_to_be_pasted_from_;
@@ -197,6 +197,8 @@ FileBrowserDialog::FileBrowserDialog(const Account &account, const ServerRepo& r
             this, SLOT(onGetDirentShareToUserOrGroup(const SeafDirent&, bool)));
     connect(table_view_, SIGNAL(direntShareSeafile(const SeafDirent&)),
             this, SLOT(onGetDirentShareSeafile(const SeafDirent&)));
+    connect(table_view_, SIGNAL(direntUploadLink(const SeafDirent&)),
+            this, SLOT(onGetDirentUploadLink(const SeafDirent&)));
     connect(table_view_, SIGNAL(direntUpdate(const SeafDirent&)),
             this, SLOT(onGetDirentUpdate(const SeafDirent&)));
     connect(table_view_, SIGNAL(direntPaste()),
@@ -796,6 +798,7 @@ void FileBrowserDialog::onFileClicked(const SeafDirent& file)
         return;
     }
     QString cached_file = data_mgr_->getLocalCachedFile(repo_.id, fpath, file.id);
+    qDebug("cached_file is %s", cached_file.toUtf8().data());
     if (!cached_file.isEmpty() && QFileInfo(cached_file).exists()) {
         // double-checked the watch, since it might fails sometime
         AutoUpdateManager::instance()->watchCachedFile(account_, repo_.id, fpath);
@@ -818,6 +821,7 @@ void FileBrowserDialog::createDirectory(const QString &name)
 
 void FileBrowserDialog::downloadFile(const QString& path)
 {
+    qDebug("begin to downloadfile is %s", path.toUtf8().data());
     FileDownloadTask *task = data_mgr_->createDownloadTask(repo_.id, path);
     connect(task, SIGNAL(finished(bool)), this, SLOT(onDownloadFinished(bool)));
 }
@@ -1229,6 +1233,34 @@ void FileBrowserDialog::onGetDirentShareToUserOrGroup(const SeafDirent& dirent,
     dialog.exec();
 }
 
+void FileBrowserDialog::onGetDirentUploadLink(const SeafDirent& dirent) {
+    QString repo_id = repo_.id;
+    QString path = ::pathJoin(current_path_, dirent.name);
+    if (dirent.isDir())
+        path += "/";
+    GetUploadLinkRequest *req = new GetUploadLinkRequest(account_, repo_id, path);
+    connect(req, SIGNAL(success(const QString&)), this,
+            SLOT(onGetUploadLinkSuccess(const QString)));
+    connect(req, SIGNAL(failed(const ApiError&)), this,
+            SLOT(onGetUploadLinkFailed(const ApiError&)));
+
+    req->send();
+}
+
+void FileBrowserDialog::onGetUploadLinkSuccess(const QString& upload_link) {
+    SharedLinkDialog *dialog = new SharedLinkDialog(upload_link, NULL, false);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
+    dialog->raise();
+    dialog->activateWindow();
+}
+
+void FileBrowserDialog::onGetUploadLinkFailed(const ApiError&) {
+    GetUploadLinkRequest *req = qobject_cast<GetUploadLinkRequest *>(sender());
+    const QString file = ::getBaseName(req->path());
+    seafApplet->messageBox(tr("Failed to get upload link information for file \"%1\"").arg(file));
+    req->deleteLater();
+}
 void FileBrowserDialog::onGetDirentShareSeafile(const SeafDirent& dirent)
 {
     QString repo_id = repo_.id;
@@ -1237,17 +1269,17 @@ void FileBrowserDialog::onGetDirentShareSeafile(const SeafDirent& dirent)
     if (dirent.isDir())
         path += "/";
     GetSmartLinkRequest *req = new GetSmartLinkRequest(account_, repo_id, path, dirent.isDir());
-    connect(req, SIGNAL(success(const QString&)),
-            this, SLOT(onGetSmartLinkSuccess(const QString&)));
+    connect(req, SIGNAL(success(const QString&, const QString&)),
+            this, SLOT(onGetSmartLinkSuccess(const QString&, const QString&)));
     connect(req, SIGNAL(failed(const ApiError&)),
             this, SLOT(onGetSmartLinkFailed(const ApiError&)));
 
     req->send();
 }
 
-void FileBrowserDialog::onGetSmartLinkSuccess(const QString& smart_link)
+void FileBrowserDialog::onGetSmartLinkSuccess(const QString& smart_link, const QString& protocol_link)
 {
-    SeafileLinkDialog(smart_link, this).exec();
+    SeafileLinkDialog(smart_link, protocol_link, this).exec();
 }
 
 void FileBrowserDialog::onGetSmartLinkFailed(const ApiError& error)
@@ -1402,7 +1434,7 @@ bool FileBrowserDialog::hasFilesToBePasted() {
     return !file_names_to_be_pasted_.empty();
 }
 
-void FileBrowserDialog::setFilesToBePasted(bool is_copy, const QStringList &file_names)
+void FileBrowserDialog::setFilesToBePasted(bool is_copy, const QMap<QString, int> &file_names)
 {
     is_copyed_when_pasted_ = is_copy;
     dir_path_to_be_pasted_from_ = current_path_;
@@ -1424,7 +1456,7 @@ void FileBrowserDialog::onGetDirentsPaste()
         }
 
         // Paste /a/ into /a/b/ is not allowed
-        for (const QString& name : file_names_to_be_pasted_) {
+        for (const QString& name : file_names_to_be_pasted_.keys()) {
             const QString file_path_to_be_pasted =
                 appendTrailingSlash(::pathJoin(dir_path_to_be_pasted_from_, name));
             if (appendTrailingSlash(current_path_).startsWith(file_path_to_be_pasted)) {

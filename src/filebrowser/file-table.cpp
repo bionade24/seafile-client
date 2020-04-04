@@ -187,6 +187,7 @@ void FileTableViewDelegate::paint(QPainter *painter, const QStyleOptionViewItem 
             QRect status_icon_rect(status_icon_pos, QSize(kFileStatusIconSize, kFileStatusIconSize));
 
             QPixmap status_icon_pixmap = getFileStatusIcon(file_status).pixmap(status_icon_rect.size());
+            qDebug("file browser icon status is %d\n", (int)file_status);
 
             painter->save();
             painter->drawPixmap(status_icon_rect, status_icon_pixmap);
@@ -367,6 +368,11 @@ void FileTableView::setupContextMenu()
             this, SLOT(onShare()));
     share_action_->setShortcut(Qt::ALT + Qt::Key_G);
 
+    upload_link_action_ = new QAction(tr("&Generate %1 Upload Link").arg(getBrand()), this);
+    connect(upload_link_action_, SIGNAL(triggered()),
+            this, SLOT(onGenUploadLink()));
+    upload_link_action_->setShortcut(Qt::ALT + Qt::Key_L);
+
     share_to_user_action_ = new QAction(tr("Share to User"), this);
     connect(share_to_user_action_, SIGNAL(triggered()),
             this, SLOT(onShareToUser()));
@@ -382,6 +388,7 @@ void FileTableView::setupContextMenu()
 
     if (parent_->repo_.encrypted) {
         share_action_->setEnabled(false);
+        upload_link_action_->setEnabled(false);
         share_to_user_action_->setEnabled(false);
         share_to_group_action_->setEnabled(false);
     }
@@ -431,6 +438,7 @@ void FileTableView::setupContextMenu()
     context_menu_->addSeparator();
     context_menu_->addAction(saveas_action_);
     context_menu_->addAction(share_action_);
+    context_menu_->addAction(upload_link_action_);
     context_menu_->addAction(share_seafile_action_);
     context_menu_->addAction(share_to_user_action_);
     context_menu_->addAction(share_to_group_action_);
@@ -549,6 +557,7 @@ void FileTableView::contextMenuEvent(QContextMenuEvent *event)
         lock_action_->setVisible(false);
         rename_action_->setVisible(false);
         share_action_->setVisible(false);
+        upload_link_action_->setVisible(false);
         share_seafile_action_->setVisible(false);
         share_to_user_action_->setVisible(false);
         share_to_group_action_->setVisible(false);
@@ -597,6 +606,7 @@ void FileTableView::contextMenuEvent(QContextMenuEvent *event)
         sync_subdirectory_action_->setVisible(true);
         share_to_user_action_->setVisible(true);
         share_to_group_action_->setVisible(true);
+        upload_link_action_->setVisible(true);
     } else {
         if (item_->locked_by_me) {
             lock_action_->setText(tr("Un&lock"));
@@ -622,6 +632,7 @@ void FileTableView::contextMenuEvent(QContextMenuEvent *event)
         sync_subdirectory_action_->setVisible(false);
         share_to_user_action_->setVisible(false);
         share_to_group_action_->setVisible(false);
+        upload_link_action_->setVisible(false);
 
         if (TransferManager::instance()->getDownloadTask(parent_->repo_.id,
             ::pathJoin(parent_->current_path_, dirent->name))) {
@@ -774,6 +785,17 @@ void FileTableView::onShare()
     emit direntShare(*item_);
 }
 
+void FileTableView::onGenUploadLink()
+{
+    if (item_ == NULL) {
+        const SeafDirent *selected_item = getSelectedItemFromSource();
+        if (selected_item && selected_item->isDir())
+                emit direntUploadLink(*selected_item);
+        return;
+    }
+    emit direntUploadLink(*item_);
+}
+
 void FileTableView::onShareToUser()
 {
     onShareToUserOrGroup(false);
@@ -822,24 +844,23 @@ void FileTableView::onUpdate()
 
 void FileTableView::onCopy()
 {
-    QStringList file_names;
+    QMap<QString, int> file_names;
 
     if (item_ == NULL) {
         const QList<const SeafDirent*> dirents = getSelectedItemsFromSource();
         for (int i = 0; i < dirents.size(); i++) {
-            file_names.push_back(dirents[i]->name);
+            file_names.insert(dirents[i]->name, dirents[i]->type == SeafDirent::DIR ? 1 : 0);
         }
     } else {
-        file_names.push_back(item_->name);
+        file_names.insert(item_->name, item_->type == SeafDirent::DIR ? 1 : 0);
     }
-
 
     parent_->setFilesToBePasted(true, file_names);
 }
 
 void FileTableView::onMove()
 {
-    QStringList file_names;
+    QMap<QString, int> file_names;
     bool has_readonly = false;
 
     if (item_ == NULL) {
@@ -850,13 +871,13 @@ void FileTableView::onMove()
                 has_readonly = true;
                 break;
             }
-            file_names.push_back(dirents[i]->name);
+            file_names.insert(dirents[i]->name, dirents[i]->type == SeafDirent::DIR ? 1 : 0);
         }
     } else {
         if (item_->readonly) {
             has_readonly = true;
         } else {
-            file_names.push_back(item_->name);
+            file_names.insert(item_->name, item_->type == SeafDirent::DIR ? 1 : 0);
         }
     }
 
